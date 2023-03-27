@@ -1,0 +1,7 @@
+# 忽略本地已经下载的数据集
+.DS_Store
+.vscode/
+datasets/
+checkpoints/
+results/
+tensorboard/
