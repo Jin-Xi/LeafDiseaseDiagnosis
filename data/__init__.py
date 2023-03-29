@@ -15,6 +15,7 @@ import importlib
 
 import torch.utils.data
 from data.base_dataset import BaseDataset
+from data.image_folder import ImageFolder 
 
 
 def find_dataset_using_name(dataset_name):
@@ -42,7 +43,7 @@ def find_dataset_using_name(dataset_name):
     for name, cls in datasetlib.__dict__.items():
         # 如果类名匹配，并且该类是BaseDataset的子类
         if name.lower() == target_dataset_name.lower() \
-           and issubclass(cls, BaseDataset):
+           and (issubclass(cls, BaseDataset) or issubclass(cls, ImageFolder)):
             dataset = cls
 
     if dataset is None:

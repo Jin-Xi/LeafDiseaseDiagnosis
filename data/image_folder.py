@@ -6,6 +6,7 @@ so that this class can load images from both current directory and its subdirect
 """
 
 import os
+from abc import ABC, abstractmethod
 
 from PIL import Image
 import torch.utils.data as data
@@ -39,9 +40,9 @@ def default_loader(path):
     return Image.open(path).convert('RGB')
 
 
-class ImageFolder(data.Dataset):
+class ImageFolder(data.Dataset, ABC):
 
-    def __init__(self, root, transform=None, return_paths=False,
+    def __init__(self, root, transform=None, target_transform=None, return_paths=False,
                  loader=default_loader):
         imgs = make_dataset(root)
         if len(imgs) == 0:
@@ -51,27 +52,41 @@ class ImageFolder(data.Dataset):
         self.root = root
         self.imgs = imgs
         self.transform = transform
+        self.target_transform = target_transform
         self.return_paths = return_paths
         self.loader = loader
 
+    @staticmethod
+    def modify_commandline_options(parser, is_train):
+        """Add new dataset-specific options, and rewrite default values for existing options.
+        Parameters:
+            parser          -- original option parser
+            is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
+        Returns:
+            the modified parser.
+        """
+        return parser
+
+    @abstractmethod
     def __getitem__(self, index):
-        path = self.imgs[index]
-        img = self.loader(path)
-        if self.transform is not None:
-            img = self.transform(img)
-        if self.return_paths:
-            return img, path
-        else:
-            return img
+        """Return a data point and its metadata information.
+        Parameters:
+            index - - a random integer for data indexing
+        Returns:
+            a dictionary of data with their names. It ususally contains the data itself and its metadata information.
+        """
+        pass
 
     def __len__(self):
         return len(self.imgs)
 
 
 if __name__ == '__main__':
-    from tqdm import tqdm
-    dataset = ImageFolder(root="E:\\2023DiseaseDiagnose\\datasets\\PlantVillage")
-    for data in tqdm(dataset):
-        pass
+    # from tqdm import tqdm
+    # dataset = ImageFolder(root="E:\\2023DiseaseDiagnose\\datasets\\PlantVillage")
+    # for data in tqdm(dataset):
+    #     pass
+    # TODO: 数据集单元测试
+    pass
 
     

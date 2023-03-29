@@ -102,4 +102,10 @@ def mkdir(path):
         os.makedirs(path)
 
 
-def class2index(classes: List) -> : 
+def class2index(img_classes: List):
+    num_class = len(img_classes)
+    class2index = {}
+    for index, name in enumerate(img_classes):
+        class2index[name] = index
+    index2class = {index: name for index, name in enumerate(img_classes)}
+    return index2class, class2index

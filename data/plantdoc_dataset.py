@@ -5,49 +5,37 @@ import os
 import random
 
 from PIL import Image
+import torch
 
-from data.base_dataset import BaseDataset, get_transform
-from data.image_folder import make_dataset
+from data.base_dataset import BaseDataset
+from data.image_folder import ImageFolder, default_loader
+from utils.utils import class2index
 
 
-class PlantDocDataset(BaseDataset):
-    def __init__(
-        self,
-        opt
-    ):
-        BaseDataset.__init__(self, opt)
+# TODO:torch transform
+
+
+class PlantDocDataset(ImageFolder):
+    def __init__(self, opt, transform=None, target_transform=None):
+        super().__init__(self, opt)
         # 获取类别信息
         img_classes = os.listdir(opt.image_root)
-        self.num_class = len(img_classes)
-        class2index = {}
-        for index, name in enumerate(img_classes):
-            class2index[name] = index
-        self.index2class = {index: name for index, name in enumerate(img_classes)}
+        self.index2class, self.class2index = class2index(img_classes)
 
         self.image_tuple = []
         for class_name in img_classes:
-            class_path = os.path.join(img_root, class_name)
+            class_path = os.path.join(opt.root, class_name)
             for path in os.listdir(class_path):
-                self.image_tuple.append((os.path.join(class_path, path), torch.tensor(class2index[class_name])))
+                self.image_tuple.append((os.path.join(class_path, path), torch.tensor(self.class2index[class_name])))
 
-        self.class_num_count = {}
-        # 统计不同类别图像的数量
-        for class_name in img_classes:
-            class_path = os.path.join(img_root, class_name)
-            self.class_num_count[class_name] = len(os.listdir(class_path))
-
-        self.loader = loader
+        self.loader = default_loader
+        # FIXME: 写一个本数据集专用的transform方法
         self.transform = transform
         self.target_transform = target_transform
 
+    # TODO:完成数据迭代方法
     def __getitem__(self, index):
-        path, target = self.image_tuple[index]
-        img = self.loader(path)
-        if self.transform is not None:
-            img = self.transform(img)
-        if self.target_transform is not None:
-            target = self.target_transform(target, self.num_class)
-        return img, target
+        pass
 
     def __len__(self):
         return len(self.image_tuple)
