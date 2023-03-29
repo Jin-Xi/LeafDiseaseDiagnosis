@@ -127,8 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# 忽略本地已经下载的数据集
-.DS_Store
-.vscode/
 datasets/*/*
+.vscode/settings.json
