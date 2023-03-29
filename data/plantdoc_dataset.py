@@ -13,13 +13,11 @@ from data.image_folder import make_dataset
 class PlantDocDataset(BaseDataset):
     def __init__(
         self,
-        img_root,
-        transform=None,
-        target_transform=None,
-        loader=default_loader
+        opt
     ):
+        BaseDataset.__init__(self, opt)
         # 获取类别信息
-        img_classes = os.listdir(img_root)
+        img_classes = os.listdir(opt.image_root)
         self.num_class = len(img_classes)
         class2index = {}
         for index, name in enumerate(img_classes):

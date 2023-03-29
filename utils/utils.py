@@ -3,10 +3,12 @@
 
 """This module contains simple helper functions """
 from __future__ import print_function
+import os
+from typing import List
+
 import torch
 import numpy as np
 from PIL import Image
-import os
 
 
 def tensor2im(input_image, imtype=np.uint8):
@@ -98,3 +100,6 @@ def mkdir(path):
     """
     if not os.path.exists(path):
         os.makedirs(path)
+
+
+def class2index(classes: List) -> : 
