@@ -6,6 +6,7 @@ import random
 
 from PIL import Image
 import torch
+import pandas as pd
 from torchvision.transforms import transforms
 
 from data.base_dataset import BaseDataset
@@ -36,18 +37,14 @@ class PlantDocDataset(ImageFolder):
         # 获取类别信息
         img_classes = os.listdir(opt.image_root)
         self.index2class, self.class2index = class2index(img_classes)
-
-        self.image_tuple = []
-        for class_name in img_classes:
-            class_path = os.path.join(opt.root, class_name)
-            for path in os.listdir(class_path):
-                self.image_tuple.append((os.path.join(class_path, path), torch.tensor(self.class2index[class_name])))
+        # TODO:完成基础设置
+        self.df = pd.read_csv(self.root)
 
         self.loader = default_loader
         self.transform = get_defaut_transforms(opt.img_size, opt.is_train)
         self.target_transform = target_transform
 
-    # TODO:完成数据迭代方法
+    # 完成数据迭代方法
     def __getitem__(self, index):
         img_path, label = self.image_tuple[index]
         img = self.loader(img_path)
