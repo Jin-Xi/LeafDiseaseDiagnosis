@@ -9,6 +9,7 @@ import os
 from abc import ABC, abstractmethod
 
 from PIL import Image
+import pandas as pd
 import torch.utils.data as data
 
 
@@ -44,13 +45,13 @@ class ImageFolder(data.Dataset, ABC):
 
     def __init__(self, root, transform=None, target_transform=None, return_paths=False,
                  loader=default_loader):
-        imgs = make_dataset(root)
-        if len(imgs) == 0:
+        df = pd.read_csv(self.root)
+        if len(df) == 0:
             raise(RuntimeError("Found 0 images in: " + root + "\n"
                                "Supported image extensions are: " + ",".join(IMG_EXTENSIONS)))
 
         self.root = root
-        self.imgs = imgs
+        self.df = df
         self.transform = transform
         self.target_transform = target_transform
         self.return_paths = return_paths

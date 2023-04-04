@@ -75,9 +75,11 @@ def gen_csv(dataset_name='PlantVillage'):
     label2encoding = {}
     for i, label in enumerate(count.keys()):
         label2encoding[label] = onehot_encoding[i]
-    df = pd.DataFrame(columns=['img_src', 'label', 'one_hot'])
+    label2index = {label:index for index, label in enumerate(count.keys())}
+
+    df = pd.DataFrame(columns=['img_src', 'label', 'label_index', 'one_hot'])
     for index in range(len(images)):
-        df.loc[len(df)] = [images[index], labels[index], label2encoding[labels[index]]]
+        df.loc[len(df)] = [images[index], labels[index], label2index[labels[index]], label2encoding[labels[index]]]
 
     # 保存csv文件
     df.to_csv('./datasets/'+dataset_name+'.csv')

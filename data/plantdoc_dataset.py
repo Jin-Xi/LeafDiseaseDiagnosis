@@ -5,6 +5,7 @@ import os
 import random
 
 from PIL import Image
+from collections import Counter
 import torch
 import pandas as pd
 from torchvision.transforms import transforms
@@ -14,42 +15,40 @@ from data.image_folder import ImageFolder, default_loader
 from utils.utils import class2index
 
 
-def get_defaut_transforms(img_size, is_train=True):
+def get_defaut_transforms(load_size, crop_size, is_train=True):
     train_trans = transforms.Compose([
-                transforms.RandomSizedCrop(max(img_size)),
+                transforms.Scale(load_size),
+                transforms.RandomSizedCrop(crop_size),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
     val_trans = transforms.Compose([
             #Higher scale-up for inception
-            transforms.Scale(int(max(img_size)/224*256)),
-            transforms.CenterCrop(max(img_size)),
+            transforms.Scale(load_size),
+            transforms.CenterCrop(crop_size),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
-    return train_trans, val_trans
+    if is_train:
+        return train_trans
+    return val_trans
 
 
 class PlantDocDataset(ImageFolder):
-    def __init__(self, opt, transform=None, target_transform=None):
-        super().__init__(self, opt)
-        # 获取类别信息
-        img_classes = os.listdir(opt.image_root)
-        self.index2class, self.class2index = class2index(img_classes)
-        # TODO:完成基础设置
-        self.df = pd.read_csv(self.root)
-
+    def __init__(self, opt, transform=None):
+        ImageFolder.__init__(self, opt)
+        self.class_number = len(Counter(self.df.lable.to_list()))
         self.loader = default_loader
-        self.transform = get_defaut_transforms(opt.img_size, opt.is_train)
-        self.target_transform = target_transform
+        self.transform = get_defaut_transforms(opt.load_size, opt.crop_size, opt.is_train)
 
     # 完成数据迭代方法
     def __getitem__(self, index):
-        img_path, label = self.image_tuple[index]
-        img = self.loader(img_path)
-
-        pass
+        img_path, label_index = self.df.loc[index].img_src, self.df.loc[index].one_hot
+        img = self.transform(self.loader(img_path))
+        label = torch.zeros(self.class_number)
+        label[label_index] = 1
+        return img, label
 
     def __len__(self):
-        return len(self.image_tuple)
+        return len(self.df)
