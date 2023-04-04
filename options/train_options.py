@@ -10,6 +10,9 @@ class TrainOptions(BaseOptions):
     It also includes shared options defined in BaseOptions.
     """
 
-    def initialize(self, parser):
+    def initialize(self, parser=None):
         parser = BaseOptions.initialize(self, parser)
-        # TODO:完成多折交叉验证训练
+        parser.add_argument('--is_train', required=True, help='锻炼模式！！')
+
+        self.isTrain = True
+        return parser
