@@ -7,6 +7,7 @@ import sys
 from collections import Counter
 
 import torch
+from torch.nn import functional as F
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 
@@ -35,36 +36,52 @@ def make_dataset(dir, max_dataset_size=float("inf")):
     return images[:min(max_dataset_size, len(images))]
 
 
-def gen_csv(dataset_src='PlantVillage', dataset_name='PlantVillage'):
+def find_target_dataset(target_dataset, scope='./'):
+    """给一个数据集的名字，查找数据集的目录
+
+    Args:
+        target_dataset (str): 目标数据集的名字
+        scope (str): 查找的目标目录 
+    """
+    # dirpath：当前查找的目录；dirname：当前的文件夹名字；filenames：？？
+    for dirpath, dirname, filenames in os.walk(scope):
+        if target_dataset in dirname:
+            return os.path.join(dirpath, target_dataset)
+    return None
+
+
+def gen_csv(dataset_name='PlantVillage'):
     """通过数据文件夹生成数据csv文件
 
     Args:
-        stc_dataset (str, optional): _description_. Defaults to 'PlantVillage'.
+        dataset_name (str, optional):数据集名字. Defaults to 'PlantVillage'.
     """
-    pwd = os.getcwd() + '/datasets/' + dataset_src
+    pwd = find_target_dataset(dataset_name)
     images = make_dataset(pwd)
     # 取出labels
     labels = []
     for img in images:
-        labels.append(img.split('/')[-2])
+        if sys.platform != "win32":
+            labels.append(img.split('/')[-2])
+        else:
+            labels.append(img.split('\\')[-2])
     # 统计labels
-    count = Counter(labels)
+    count = Counter(labels.copy())
 
     # 标签序列化
-    labels = list(count.keys())
-    onehot_encoding = torch.nn.functional.one_hot(torch.arange(0, len(count.keys()))).tolist()
+    onehot_encoding = F.one_hot(torch.arange(0, len(count.keys()))).tolist()
 
     # 构建label2encoding字典
     label2encoding = {}
-    for i, label in enumerate(labels):
+    for i, label in enumerate(count.keys()):
         label2encoding[label] = onehot_encoding[i]
     df = pd.DataFrame(columns=['img_src', 'label', 'one_hot'])
-    for index, (img, label) in enumerate(zip(images, labels)):
-        df.loc[index] = [img, label, label2encoding[label]]
+    for index in range(len(images)):
+        df.loc[len(df)] = [images[index], labels[index], label2encoding[labels[index]]]
 
     # 保存csv文件
     df.to_csv('./datasets/'+dataset_name+'.csv')
 
 
 if __name__ == '__main__':
-    gen_csv('PlantDoc/train')
+    gen_csv('PlantDoc')

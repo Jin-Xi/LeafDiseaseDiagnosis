@@ -5,6 +5,7 @@
 from __future__ import print_function
 import os
 from typing import List
+import shutil
 
 import torch
 import numpy as np
@@ -109,3 +110,8 @@ def class2index(img_classes: List):
         class2index[name] = index
     index2class = {index: name for index, name in enumerate(img_classes)}
     return index2class, class2index
+
+
+if __name__ == '__main__':
+    # print(find_target_dataset(target_dataset="PlantVillage"))
+    pass
