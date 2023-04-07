@@ -65,6 +65,10 @@ class ImageFolder(data.Dataset, ABC):
             is_train (bool) -- whether training phase or test phase. You can use this flag to add training-specific or test-specific options.
         Returns:
             the modified parser.
+
+        示例：
+            parser.add_argument('--new_dataset_option', type=float, default=1.0, help='new dataset option')
+            parser.set_defaults(max_dataset_size=10, new_dataset_option=2.0)  # specify dataset-specific default values
         """
         return parser
 
@@ -87,7 +91,6 @@ if __name__ == '__main__':
     # dataset = ImageFolder(root="E:\\2023DiseaseDiagnose\\datasets\\PlantVillage")
     # for data in tqdm(dataset):
     #     pass
-    # TODO: 数据集单元测试
     pass
 
     

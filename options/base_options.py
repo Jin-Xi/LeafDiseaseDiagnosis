@@ -8,9 +8,10 @@ import torch
 
 import models
 import data
+from utils.utils import mkdirs
 
 
-class BaseOptions():
+class BaseOptions:
     """This class defines options used during both training and test time.
     It also implements several helper functions such as parsing, printing, and saving the options.
     It also gathers additional options defined in <modify_commandline_options> functions in both dataset class and model class.
@@ -27,7 +28,7 @@ class BaseOptions():
         parser.add_argument('--name', type=str, default='VGG16', help='实验名字，用于存储checkpoint')
         parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='模型存储路径')
-        # model parameters
+        # model parameters, available models see: https://pytorch.org/vision/stable/models.html
         parser.add_argument('--model', type=str, default='VGG16', help='————————')
         # dataset parameters
         parser.add_argument('--num_threads', default=4, type=int, help='dataloader线程数')
@@ -85,7 +86,7 @@ class BaseOptions():
 
         # save to the disk
         expr_dir = os.path.join(opt.checkpoints_dir, opt.name)
-        util.mkdirs(expr_dir)
+        mkdirs(expr_dir)
         file_name = os.path.join(expr_dir, '{}_opt.txt'.format(opt.phase))
         with open(file_name, 'wt') as opt_file:
             opt_file.write(message)

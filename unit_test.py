@@ -3,7 +3,9 @@ from options.train_options import TrainOptions
 
 
 def main():
-    opt = TrainOptions().parse()
+    opt = TrainOptions()
+    opt.gather_options()
+    dataset = PlantDocDataset(opt)
 
 
 if __name__ == '__main__':
