@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 
 import torch
 from torch.optim import lr_scheduler
-import torchvision.models as M
+from torchvision.models import get_model, get_weight, ResNet50_Weights
 
 
 class BaseModel(ABC):
@@ -44,11 +44,14 @@ class BaseModel(ABC):
         self.optimizer_name = opt.optimizer_name
         self.optimizer = None
         self.scheduler = None
-        self.image_paths = []
+        self.image_paths = []  # 用于储存以往的图像
         self.metric = 0  # used for learning rate policy 'plateau'
 
         setattr(self, "net_" + self.model_name, None)
-        model = getattr(M, self.model_name)
+        if not opt.is_pretrain:
+            self.model = get_model(self.model_name, weight=None)
+        else:
+            self.model = get_model(self.model_name, weight='DEFAULT')
 
     @staticmethod
     def modify_commandline_options(parser, is_train):

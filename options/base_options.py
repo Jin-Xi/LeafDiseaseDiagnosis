@@ -29,8 +29,9 @@ class BaseOptions:
         parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='模型存储路径')
         # model parameters, available models see: https://pytorch.org/vision/stable/models.html
-        parser.add_argument('--model', type=str, default='VGG16', help='————————')
+        parser.add_argument('--model', type=str, default='leaf', help='————————')
         # dataset parameters
+        parser.add_argument('--dataset_mode', type=str, default='plantdoc', help='dataset名字')
         parser.add_argument('--num_threads', default=4, type=int, help='dataloader线程数')
         parser.add_argument('--batch_size', type=int, default=1, help='input batch size')
         parser.add_argument('--load_size', type=int, default=286, help='scale images to this size')

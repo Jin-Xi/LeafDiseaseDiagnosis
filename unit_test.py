@@ -1,11 +1,13 @@
-from data.plantdoc_dataset import PlantDocDataset
+from data import create_dataset
+from models import create_model
 from options.train_options import TrainOptions
 
 
 def main():
     opt = TrainOptions()
     opt.gather_options()
-    dataset = PlantDocDataset(opt)
+    model = create_model(opt)
+    dataset = create_dataset(opt)
 
 
 if __name__ == '__main__':
